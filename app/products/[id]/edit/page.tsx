@@ -8,6 +8,19 @@ import { useParams, useRouter } from 'next/navigation';
 import { useProductStore } from '@/store/useProductStore';
 import Navbar from '@/components/Navbar';
 
+export async function generateStaticParams() {
+  try {
+    const response = await fetch('https://dummyjson.com/products?limit=100');
+    const data = await response.json();
+    return data.products.map((product: any) => ({
+      id: product.id.toString(),
+    }));
+  } catch (error) {
+    console.error('Error fetching products for static generation:', error);
+    return [];
+  }
+}
+
 const productSchema = z.object({
   title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
   description: z.string().min(10, 'Описание должно содержать минимум 10 символов'),
